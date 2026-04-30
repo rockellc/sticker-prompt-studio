@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticker Prompt Studio ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rose: #C17A88; --deep: #8B4A58; --cream: #FAF6F0; --blush: #FDE8EC;
+  --border: #F2C5C8; --text: #3D1B29; --muted: #9A7080;
+  --fd: 'Playfair Display', serif; --fb: 'Nunito', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { font-family: var(--fb); background: var(--cream); color: var(--text); min-height: 100vh; }
+a { text-decoration: none; color: inherit; }
+
+/* HOW TO USE */
+.how { background: linear-gradient(135deg,#FFF5F7,#F5EBF8); border-bottom: 1px solid var(--border); padding: .65rem 1rem; }
+.how-inner { max-width: 720px; margin: 0 auto; }
+.how-title { font-size: .62rem; font-weight: 700; color: var(--deep); letter-spacing: .5px; text-transform: uppercase; margin-bottom: .45rem; }
+.how-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: .38rem; }
+.how-step { background: white; border: 1px solid var(--border); border-radius: 9px; padding: .42rem .38rem; text-align: center; }
+.how-n { width: 18px; height: 18px; background: linear-gradient(135deg,var(--rose),var(--deep)); color: white; border-radius: 50%; font-size: .56rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto .2rem; }
+.how-t { font-size: .58rem; font-weight: 700; color: var(--text); margin-bottom: .08rem; }
+.how-s { font-size: .52rem; color: var(--muted); line-height: 1.3; }
+
+/* HEADER */
+.hdr { background: linear-gradient(155deg,#FDE8EC 0%,#F9EBE0 45%,#EEE4F5 100%); padding: 1.3rem 1rem 1rem; text-align: center; border-bottom: 2px solid var(--border); position: relative; overflow: hidden; }
+.hdr::before { content: "✿ ✾ ✿ ✾ ✿ ✾ ✿"; position: absolute; top: .28rem; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--rose); opacity: .3; letter-spacing: 7px; white-space: nowrap; pointer-events: none; }
+.hdr-eye { font-size: .58rem; font-weight: 700; color: #C9956A; letter-spacing: 2px; text-transform: uppercase; margin-bottom: .2rem; }
+.hdr-title { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #6B2D45; line-height: 1.1; margin-bottom: .18rem; }
+.hdr-title em { color: var(--rose); font-style: italic; }
+.hdr-sub { font-size: .66rem; color: var(--muted); }
+.hdr-chips { display: flex; justify-content: center; gap: .28rem; flex-wrap: wrap; margin-top: .55rem; }
+.hchip { background: rgba(255,255,255,.72); border: 1px solid rgba(193,122,136,.3); color: var(--muted); font-size: .58rem; font-weight: 700; padding: .12rem .48rem; border-radius: 20px; }
+
+/* NAV */
+.nav { background: white; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 20; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav-inner { display: flex; justify-content: center; min-width: max-content; margin: 0 auto; padding: 0 .5rem; }
+.nb { flex: none; padding: .6rem .85rem; border: none; background: transparent; cursor: pointer; font-family: var(--fb); font-size: .65rem; font-weight: 700; color: #BCA0A8; border-bottom: 2.5px solid transparent; transition: all .2s; white-space: nowrap; margin-bottom: -2px; }
+.nb.on { color: var(--rose); border-bottom-color: var(--rose); background: #FFF5F7; }
+.nb:hover:not(.on) { color: var(--muted); background: #FFF8F9; }
+
+/* PANEL */
+.panel { padding: 1.1rem; max-width: 720px; margin: 0 auto; }
+.st { font-family: var(--fd); font-size: .93rem; font-weight: 600; color: #6B2D45; margin-bottom: .58rem; }
+.lbl { font-size: .6rem; font-weight: 700; color: #8B5070; letter-spacing: .6px; text-transform: uppercase; display: block; margin-bottom: .26rem; }
+.mb { margin-bottom: .8rem; }
+.info { background: #FFF5F7; border: 1px solid var(--border); border-radius: 9px; padding: .58rem .72rem; margin-bottom: .8rem; font-size: .67rem; color: #7A5060; line-height: 1.52; }
+
+/* STYLE SCROLL */
+.hscroll { display: flex; gap: .48rem; overflow-x: auto; padding-bottom: .38rem; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.hscroll::-webkit-scrollbar { height: 3px; }
+.hscroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.sc { flex: none; width: 118px; padding: .68rem .62rem; border-radius: 11px; border: 2px solid transparent; cursor: pointer; transition: all .18s; text-align: left; }
+.sc.on { border-color: var(--rose); box-shadow: 0 3px 12px rgba(193,122,136,.22); }
+.sc:hover:not(.on) { transform: translateY(-2px); }
+.sc-em { font-size: 1.2rem; display: block; margin-bottom: .22rem; }
+.sc-nm { font-size: .65rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+.sc-ds { font-size: .55rem; color: var(--muted); margin-top: .15rem; line-height: 1.3; }
+
+/* PALETTE */
+.pal-row { display: flex; gap: .36rem; overflow-x: auto; padding-bottom: .28rem; scrollbar-width: none; margin-bottom: .8rem; }
+.pal-row::-webkit-scrollbar { display: none; }
+.pc { flex: none; padding: .36rem .52rem; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all .16s; background: white; display: flex; align-items: center; gap: .32rem; }
+.pc.on { border-color: var(--rose); box-shadow: 0 2px 8px rgba(193,122,136,.18); }
+.pdots { display: flex; gap: 2px; }
+.pdot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid rgba(255,255,255,.5); }
+.pnm { font-size: .58rem; font-weight: 700; color: var(--text); white-space: nowrap; }
+
+/* CUSTOM COLOUR */
+.cpal { display: flex; align-items: center; gap: .48rem; padding: .48rem .62rem; border: 1.5px dashed var(--border); border-radius: 9px; background: #FDFBF9; margin-bottom: .8rem; flex-wrap: wrap; }
+.cpal.active { border-color: var(--rose); border-style: solid; }
+.cpal-lbl { font-size: .62rem; font-weight: 700; color: #8B5070; flex-shrink: 0; }
+.cpal input[type=color] { width: 25px; height: 25px; border: 2px solid var(--border); border-radius: 5px; cursor: pointer; padding: 0; background: none; -webkit-appearance: none; }
+.cpal input[type=color]::-webkit-color-swatch-wrapper { padding: 0; border-radius: 3px; }
+.cpal input[type=color]::-webkit-color-swatch { border: none; border-radius: 3px; }
+.cpal-note { font-size: .58rem; color: var(--muted); }
+
+/* OUTLINE GRID */
+.og { display: grid; grid-template-columns: repeat(auto-fill,minmax(65px,1fr)); gap: .3rem; margin-bottom: .8rem; }
+.oc2 { padding: .36rem .26rem; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all .13s; background: white; text-align: center; }
+.oc2.on { border-color: var(--rose); background: var(--blush); }
+.os { width: 20px; height: 20px; border-radius: 50%; margin: 0 auto .16rem; border: 2px solid #ddd; }
+.ol { font-size: .52rem; font-weight: 700; color: var(--text); }
+
+/* BACKGROUND */
+.bg-row { display: flex; gap: .36rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.bgc { padding: .36rem .62rem; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all .13s; background: white; display: flex; align-items: center; gap: .32rem; font-size: .63rem; font-weight: 700; color: var(--text); }
+.bgc.on { border-color: var(--rose); background: var(--blush); }
+.bgs { width: 13px; height: 13px; border-radius: 3px; border: 1px solid #ddd; flex-shrink: 0; }
+
+/* CHIPS */
+.chips { display: flex; flex-wrap: wrap; gap: .26rem; margin-bottom: .8rem; }
+.chip { padding: .2rem .5rem; border-radius: 20px; font-size: .62rem; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--muted); transition: all .12s; user-select: none; }
+.chip.on { background: var(--blush); border-color: var(--rose); color: var(--deep); }
+.chip:hover:not(.on) { background: #FFF5F7; }
+
+/* INPUTS */
+.irow { display: flex; gap: .38rem; margin-bottom: .12rem; }
+.txt { flex: 1; padding: .54rem .78rem; border: 1.5px solid var(--border); border-radius: 9px; font-family: var(--fb); font-size: .78rem; color: var(--text); background: white; outline: none; transition: border-color .18s; width: 100%; }
+.txt:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(193,122,136,.1); }
+.txt::placeholder { color: #C4A8B0; }
+textarea.txt { resize: vertical; }
+.sel { width: 100%; padding: .52rem .78rem; border: 1.5px solid var(--border); border-radius: 9px; font-family: var(--fb); font-size: .76rem; color: var(--text); background: white; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath fill='%23C17A88' d='M0 0l4.5 5L9 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .78rem center; padding-right: 1.8rem; margin-bottom: .8rem; }
+.sel:focus { border-color: var(--rose); }
+.surp { padding: .54rem .7rem; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: .7rem; font-weight: 700; color: var(--rose); white-space: nowrap; transition: all .18s; font-family: var(--fb); }
+.surp:hover { background: var(--blush); }
+
+/* OPT GRID */
+.opt2 { display: grid; grid-template-columns: 1fr 1fr; gap: .33rem; margin-bottom: .8rem; }
+.oc { padding: .5rem .62rem; border-radius: 8px; border: 2px solid var(--border); cursor: pointer; transition: all .13s; background: white; }
+.oc.on { background: var(--blush); border-color: var(--rose); }
+.oc-l { font-size: .66rem; font-weight: 700; color: var(--text); }
+.oc-s { font-size: .55rem; color: var(--muted); margin-top: 1px; }
+
+/* STROKE */
+.strk-row { display: flex; gap: .3rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.strk { padding: .36rem .65rem; border-radius: 20px; border: 2px solid var(--border); cursor: pointer; transition: all .13s; background: white; display: flex; align-items: center; gap: .32rem; font-size: .63rem; font-weight: 700; color: var(--text); }
+.strk.on { background: var(--blush); border-color: var(--rose); }
+.sdot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+/* TOGGLE */
+.trow { display: flex; align-items: center; gap: .48rem; margin-bottom: .68rem; }
+.tl { font-size: .66rem; font-weight: 700; color: #8B5070; }
+.tn { font-size: .6rem; color: var(--muted); }
+.tgl { position: relative; width: 35px; height: 18px; flex-shrink: 0; }
+.tgl input { opacity: 0; width: 0; height: 0; position: absolute; }
+.ttrack { position: absolute; inset: 0; background: #E8D8DC; border-radius: 9px; transition: .22s; cursor: pointer; }
+.ttrack::before { content: ""; position: absolute; width: 12px; height: 12px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .22s; box-shadow: 0 1px 3px rgba(0,0,0,.13); }
+.tgl input:checked ~ .ttrack { background: var(--rose); }
+.tgl input:checked ~ .ttrack::before { transform: translateX(17px); }
+
+/* WHY BOX */
+.why { background: #FFF5F7; border: 1px solid var(--border); border-radius: 9px; padding: .55rem .7rem; margin-bottom: .75rem; cursor: pointer; user-select: none; }
+.why-h { display: flex; justify-content: space-between; align-items: center; }
+.why-lbl { font-size: .62rem; font-weight: 700; color: var(--deep); }
+.why-body { font-size: .66rem; color: #7A5060; line-height: 1.55; margin-top: .42rem; display: none; }
+.why.open .why-body { display: block; }
+.why-chev { font-size: .58rem; color: var(--rose); transition: transform .2s; }
+.why.open .why-chev { transform: rotate(180deg); }
+
+/* PNG FONT CARDS */
+.png-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; margin-bottom: .8rem; }
+.pfc { padding: .42rem .5rem; border-radius: 8px; border: 2px solid #C8E0EA; background: white; cursor: pointer; transition: all .13s; }
+.pfc.on { border-color: var(--rose); background: var(--blush); }
+.pfc:hover:not(.on) { border-color: var(--rose); }
+.pfn { font-size: .55rem; font-weight: 700; color: #5A8098; margin-bottom: .15rem; }
+
+/* BUTTONS */
+.btn { width: 100%; padding: .78rem; background: linear-gradient(135deg,var(--rose),var(--deep)); color: white; border: none; border-radius: 11px; font-family: var(--fd); font-size: .86rem; font-weight: 600; cursor: pointer; letter-spacing: .3px; transition: all .18s; margin-bottom: .8rem; }
+.btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(193,122,136,.4); }
+.bsm { padding: .38rem .65rem; border-radius: 7px; font-family: var(--fb); font-size: .62rem; font-weight: 700; cursor: pointer; transition: all .16s; border: 1.5px solid; display: inline-flex; align-items: center; gap: .2rem; white-space: nowrap; }
+.brose { background: var(--blush); border-color: var(--border); color: var(--deep); }
+.brose:hover { background: #F5D5E0; }
+.brose.ok { background: #E4F0E4; border-color: #8FAF8F; color: #3A7A4A; }
+.bghost { background: white; border-color: var(--border); color: var(--deep); }
+.bghost:hover { background: #FFF5F7; }
+
+/* OUTPUT */
+.outc { background: white; border: 2px solid var(--border); border-radius: 11px; padding: .92rem; margin-bottom: .8rem; animation: fi .25s ease; }
+@keyframes fi { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.out-meta { font-size: .57rem; font-weight: 700; color: #C9956A; letter-spacing: .6px; text-transform: uppercase; margin-bottom: .36rem; }
+.out-text { font-size: .77rem; color: var(--deep); line-height: 1.68; font-style: italic; margin-bottom: .6rem; white-space: pre-wrap; word-break: break-word; }
+.out-acts { display: flex; gap: .33rem; flex-wrap: wrap; }
+
+/* BUNDLE */
+.bpiece { border: 1px solid var(--border); border-radius: 8px; padding: .65rem; margin-bottom: .4rem; background: #FDFBF9; }
+.bnum { font-family: var(--fd); font-size: .63rem; color: #C9956A; font-weight: 600; margin-bottom: .18rem; }
+.btext { font-size: .7rem; color: var(--deep); line-height: 1.52; font-style: italic; }
+.bacts { display: flex; gap: .26rem; margin-top: .36rem; }
+
+/* LIBRARY / IDEAS */
+.filt-row { display: flex; gap: .28rem; flex-wrap: wrap; margin-bottom: .72rem; }
+.fbtn { padding: .24rem .6rem; border-radius: 20px; border: 1.5px solid var(--border); background: white; font-family: var(--fb); font-size: .62rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .12s; }
+.fbtn.on { background: var(--blush); border-color: var(--rose); color: var(--deep); }
+.lcard { background: white; border: 1px solid var(--border); border-radius: 8px; padding: .65rem .75rem; display: flex; align-items: flex-start; gap: .46rem; margin-bottom: .4rem; }
+.lnum { font-family: var(--fd); font-size: .63rem; color: #C9956A; font-weight: 600; min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+.ltext { flex: 1; font-size: .67rem; color: var(--deep); line-height: 1.5; font-style: italic; }
+.lbtn { flex-shrink: 0; padding: .16rem .42rem; border: 1px solid var(--border); border-radius: 5px; font-size: .57rem; font-weight: 700; color: var(--rose); cursor: pointer; background: white; font-family: var(--fb); transition: .12s; }
+.lbtn:hover { background: var(--blush); }
+.lbtn.ok { background: #E4F0E4; border-color: #8FAF8F; color: #3A7A4A; }
+
+/* IDEAS */
+.ntabs { display: flex; gap: .3rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.ntab { padding: .26rem .62rem; border-radius: 20px; border: 1.5px solid var(--border); font-family: var(--fb); font-size: .62rem; font-weight: 700; color: var(--muted); cursor: pointer; transition: all .12s; background: white; }
+.ntab.on { background: var(--blush); border-color: var(--rose); color: var(--deep); }
+.idea-item { background: white; border: 1px solid var(--border); border-radius: 8px; padding: .55rem .7rem; display: flex; justify-content: space-between; align-items: center; gap: .4rem; margin-bottom: .36rem; transition: all .12s; }
+.idea-item:hover { background: #FFF5F7; border-color: #E8B8C0; transform: translateX(2px); }
+.idea-txt { font-size: .7rem; color: var(--text); font-weight: 600; flex: 1; }
+.idea-acts { display: flex; gap: .24rem; flex-shrink: 0; }
+.iuse { font-size: .58rem; font-weight: 700; padding: .16rem .4rem; border-radius: 5px; border: 1px solid var(--border); background: white; color: var(--rose); cursor: pointer; font-family: var(--fb); white-space: nowrap; }
+.iuse:hover { background: var(--blush); }
+.iuse.go { background: var(--blush); border-color: var(--rose); color: var(--deep); }
+
+/* SAVED */
+.sv-empty { text-align: center; padding: 2.5rem 1rem; color: #C4A8B0; font-size: .74rem; }
+.svcard { background: white; border: 1px solid var(--border); border-radius: 9px; padding: .7rem; margin-bottom: .46rem; }
+.sv-meta { font-size: .57rem; color: #C9956A; font-weight: 700; margin-bottom: .24rem; text-transform: uppercase; letter-spacing: .4px; }
+.sv-text { font-size: .68rem; color: var(--deep); line-height: 1.5; font-style: italic; margin-bottom: .38rem; }
+
+/* PRICE */
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: .38rem; margin-bottom: .85rem; }
+.pcard { background: white; border: 1px solid var(--border); border-radius: 9px; padding: .6rem .7rem; }
+.pname { font-size: .64rem; font-weight: 700; color: var(--text); }
+.pval { font-family: var(--fd); font-size: 1.1rem; font-weight: 700; color: #C9956A; margin: .05rem 0; }
+.pnote { font-size: .55rem; color: var(--muted); }
+.tipcard { background: white; border: 1px solid var(--border); border-radius: 9px; padding: .7rem; margin-bottom: .46rem; }
+.tip-t { font-size: .68rem; font-weight: 700; color: var(--deep); margin-bottom: .24rem; }
+.tip-b { font-size: .65rem; color: #7A5060; line-height: 1.52; }
+
+/* PREVIEW */
+.prev-wrap { text-align: center; margin-bottom: .78rem; padding: .48rem; background: #F5F0F8; border-radius: 9px; border: 1px solid #E8D0EC; }
+.prev-lbl { font-size: .56rem; font-weight: 700; color: #8B5070; letter-spacing: .5px; text-transform: uppercase; margin-bottom: .25rem; }
+
+/* FOOTER */
+.footer { background: linear-gradient(135deg,#B5446E,#8B2D50); padding: 1.1rem 1rem .85rem; text-align: center; margin-top: 1.5rem; }
+.ftr-logo { font-family: var(--fd); font-size: .9rem; font-weight: 700; color: white; margin-bottom: .16rem; }
+.ftr-logo em { color: #FFD6E8; font-style: italic; }
+.ftr-sub { font-size: .58rem; color: rgba(255,255,255,.62); margin-bottom: .65rem; }
+.ftr-links { display: flex; justify-content: center; flex-wrap: wrap; gap: .38rem; margin-bottom: .55rem; }
+.flnk { color: white; font-size: .58rem; font-weight: 700; padding: .18rem .52rem; border-radius: 20px; border: 1px solid rgba(255,255,255,.28); transition: all .16s; display: inline-flex; align-items: center; gap: .2rem; }
+.flnk:hover { background: rgba(255,255,255,.18); }
+.flnk.hi { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.48); }
+.ftr-copy { font-size: .53rem; color: rgba(255,255,255,.38); }
+.div { height: 1px; background: linear-gradient(to right,transparent,var(--border),transparent); margin: .78rem 0; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+
+var TRENDING = ["Mushroom House Fairy","Axolotl Mermaid","Pastel Ghost","Frog Librarian","Cottagecore Bunny","Kawaii Cloud","Cinnamon Roll Cat","Jellyfish Fairy","Capybara Tea Party","Snail Mail Carrier","Strawberry Cow","Moth Witch","Sleepy Hedgehog","Blueberry Bear","Lemon Frog","Celestial Hamster","Pine Marten","Raccoon Barista","Ghost Librarian","Bee Cottage Girl","Snail Garden","Bear in Overalls","Bunny Witch","Moon Cat","Dandelion Fairy"];
+
+var PALETTES = [
+  {id:"pr",label:"Pastel Rainbow",c:["#FFB3C6","#FFE4A0","#B3F0C6","#B3D9FF","#E8B3FF"],d:"blush pink, butter yellow, mint, baby blue, soft lavender"},
+  {id:"rg",label:"Rose Gold & Blush",c:["#FDE8EC","#F5D5E0","#C9956A","#D4A0A0","#FFF5F0"],d:"blush pink, dusty rose, rose gold, mauve, ivory"},
+  {id:"ht",label:"Hot Pink & Teal",c:["#FF1F8E","#FF6BAE","#00CEC9","#55EFC4","#FFFFFF"],d:"hot magenta, bubblegum, teal, seafoam, white"},
+  {id:"pb",label:"Peach & Brown",c:["#FFCBA4","#F0A080","#8B5E3C","#D4A574","#FFF0E0"],d:"warm peach, coral, caramel, honey, cream"},
+  {id:"sd",label:"Sage & Dusty Rose",c:["#8FAF8F","#C8D8C0","#E8C8D0","#F0EBE0","#D4B8A8"],d:"sage green, dusty mint, dusty rose, linen, warm beige"},
+  {id:"sp",label:"Sky Blue & Peach",c:["#87CEEB","#ADE8F4","#FFCBA4","#FFB347","#FFFFFF"],d:"sky blue, pale aqua, warm peach, golden orange, white"},
+  {id:"py",label:"Purple & Yellow",c:["#9B59B6","#D7BDE2","#F9E79F","#F4D03F","#FFFFFF"],d:"deep violet, soft lilac, butter yellow, sunshine, white"},
+  {id:"ll",label:"Lemon & Lavender",c:["#FFF44F","#FFFACD","#E8D5F5","#C9B1E8","#FFFFFF"],d:"lemon yellow, cream, soft lavender, dusty purple, white"},
+  {id:"ct",label:"Coral & Turquoise",c:["#FF6B6B","#FF8E53","#00CEC9","#81ECEC","#FFFFFF"],d:"coral red, warm orange, turquoise, pale teal, white"},
+  {id:"mn",label:"Minimal Neutral",c:["#F5F5F0","#E8E0D8","#C8B8A8","#8B7B6B","#3D3228"],d:"off-white, warm grey, stone, taupe, espresso"},
+  {id:"cc",label:"Cottagecore",c:["#F0EBE0","#D4C9B8","#8FAF8F","#C4844A","#E8D5B0"],d:"warm cream, linen, sage green, terracotta, honey gold"},
+  {id:"cd",label:"Celestial Dark",c:["#2D2D5C","#9B8EC4","#F0E8D0","#C4A84A","#E8D0F8"],d:"midnight navy, soft purple, ivory, antique gold, pale lavender"},
+  {id:"bg",label:"Bubblegum Pop",c:["#FF85A1","#FFB3C6","#C9B1FF","#A8DFFF","#FFF4A8"],d:"hot pink, bubblegum, soft purple, baby blue, lemon"},
+  {id:"cq",label:"Coquette Blush",c:["#FFD6E0","#FFAEC9","#E8C8D8","#F5E6EC","#C8A0B0"],d:"powder pink, ballet pink, dusty mauve, blush rose, antique pink"},
+];
+
+var OUTLINES = [
+  {id:"w2",label:"White 2px",color:"#FFF",border:"#aaa",p:"clean 2px white outline border"},
+  {id:"w4",label:"White 4px",color:"#FFF",border:"#aaa",p:"bold 4px white outline border"},
+  {id:"b2",label:"Black 2px",color:"#111",border:"#111",p:"clean 2px black outline border"},
+  {id:"b4",label:"Black 4px",color:"#111",border:"#111",p:"bold 4px black outline border"},
+  {id:"pk",label:"Pink",color:"#FF85A1",border:"#FF85A1",p:"vibrant pink outline border"},
+  {id:"ro",label:"Rose Gold",color:"#C9956A",border:"#C9956A",p:"elegant rose gold outline border"},
+  {id:"pu",label:"Purple",color:"#9B59B6",border:"#9B59B6",p:"soft purple outline border"},
+  {id:"go",label:"Gold",color:"#F4D03F",border:"#E8B800",p:"shiny gold outline border"},
+  {id:"re",label:"Red",color:"#E74C3C",border:"#E74C3C",p:"bold red outline border"},
+  {id:"mi",label:"Mint",color:"#55EFC4",border:"#2ECC9A",p:"soft mint green outline border"},
+];
+
+var BGS = [
+  {id:"wh",label:"White",color:"#FFFFFF",p:"white background"},
+  {id:"ps",label:"Soft Pastel",color:"#FDE8EC",p:"soft pastel blush pink background"},
+  {id:"cr",label:"Cream",color:"#FFF8F0",p:"warm cream background"},
+];
+
+var STROKES = [
+  {id:"sw",label:"White Outline",dot:"#fff",ring:"#999",p:"white text outline stroke"},
+  {id:"sb",label:"Black Outline",dot:"#fff",ring:"#000",p:"black text outline stroke"},
+  {id:"sd",label:"Double Outline",dot:"#fff",ring:"#C17A88",p:"double contrasting outline stroke"},
+  {id:"sg",label:"Glow Effect",dot:"#FFB3C6",ring:"transparent",p:"soft glowing halo effect around text"},
+];
+
+var IMG_STYLES = [
+  {id:"chibi",em:"✨",label:"Chibi / Kawaii",short:"Kawaii",bg:"linear-gradient(135deg,#FDE8EC,#F5D5E0)",bdr:"#F2C5C8",desc:"Big eyes · Blush marks · Glossy",
+   why:"'2:1 head-to-body ratio' and 'kawaii blush marks' separate generic cartoon from the high-value kawaii look buyers search for.",
+   mods:["big sparkle eyes","2:1 head-to-body ratio","soft cell shading","kawaii blush marks","glossy finish","die-cut ready"]},
+  {id:"crochet",em:"🧶",label:"Crochet / Amigurumi",short:"Crochet",bg:"linear-gradient(135deg,#E4EFE4,#D0E4D0)",bdr:"#A8C8A8",desc:"Yarn loops · Plush · Handmade",
+   why:"'Amigurumi' is the exact Japanese term AI image models are trained on. 'Macro Fiber Detail' forces individual yarn loops to actually appear in the output.",
+   mods:["Amigurumi style","Macro Fiber Detail","yarn texture visible","hand-stitched look","soft plush appearance","visible seam lines"]},
+  {id:"diecut",em:"✂️",label:"Die-Cut / Holographic",short:"Die-Cut",bg:"linear-gradient(135deg,#EEE8F4,#E0D4F0)",bdr:"#C8B8E4",desc:"Crisp outline · Holographic · Print-ready",
+   why:"'Die-cut border' and 'kiss-cut detail' are pro printing terms AI recognises, producing the precise white outline border needed for physical sticker production.",
+   mods:["holographic shimmer","kiss-cut detail","chrome metallic sheen","clean vector edges","vibrant saturated colors","print-ready"]},
+  {id:"watercolor",em:"🎨",label:"Watercolour Art",short:"Watercolour",bg:"linear-gradient(135deg,#FEF3E2,#FAEBD7)",bdr:"#E8D0A8",desc:"Soft washes · Botanical · Dreamy",
+   why:"'Loose brushstroke edges' and 'translucent colour layers' produce authentic painted stickers — not a filter. These are the specific technique terms AI image models respond to.",
+   mods:["soft watercolour wash","loose brushstroke edges","translucent colour layers","fine ink outlines","botanical illustration style","ethereal soft glow"]},
+  {id:"vintage",em:"🌿",label:"Vintage Cottagecore",short:"Vintage",bg:"linear-gradient(135deg,#F0EBE0,#E8DDD0)",bdr:"#D4C4A8",desc:"Aged · Botanical engravings · Muted",
+   why:"'Botanical engraving detail' adds fine Victorian crosshatch linework. Without it you get modern flat design. With it, you get premium antique quality buyers pay more for.",
+   mods:["vintage illustration style","aged paper tone","botanical engraving detail","muted earth palette","delicate line art","pressed flower aesthetic"]},
+  {id:"png",em:"👕",label:"PNG / Sublimation",short:"PNG",bg:"linear-gradient(135deg,#E8F4F8,#D4EAF5)",bdr:"#A8C8D8",desc:"DTF · T-shirt · Fancy script · No border",
+   why:"PNG sublimation designs sit directly on fabric — no thick border needed. Fancy retro script fonts read best at print scale. Perfect for DTF transfers, Printify, and Printful.",
+   isPNG:true,
+   mods:["DTF transfer ready","clean vector illustration","retro vintage aesthetic","scattered star accents","soft vintage distressed wash","bold saturated colors"]},
+];
+
+var PNG_STYLES = [
+  {id:"rs",label:"Retro Script",ex:"Later Alligator",ec:"#2ECC71",fs:"font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:.95rem",p:"retro italic script lettering with smooth flowing curves and vintage charm"},
+  {id:"bs",label:"Brushstroke",ex:"After While",ec:"#FF85A1",fs:"font-family:Georgia,serif;font-style:italic;font-weight:900;font-size:.9rem",p:"bold expressive brushstroke hand-lettered typography with painted stroke texture"},
+  {id:"g7",label:"Groovy 70s",ex:"Good Vibes",ec:"#9B59B6",fs:"font-weight:900;font-size:.88rem;letter-spacing:1px",p:"groovy 1970s retro display font with round bubbly letters and vintage psychedelic flair"},
+  {id:"ch",label:"Casual Hand",ex:"Sweet Life",ec:"#C9956A",fs:"font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:.9rem",p:"casual handwritten lettering with a relaxed friendly hand-drawn quality"},
+  {id:"bw",label:"Bold Western",ex:"Wild & Free",ec:"#8B4A20",fs:"font-weight:900;font-size:.85rem;letter-spacing:2px",p:"bold western display typeface with strong slab serif letterforms and rodeo energy"},
+  {id:"va",label:"Varsity / Athletic",ex:"Team Spirit",ec:"#2980B9",fs:"font-weight:900;font-size:.88rem;letter-spacing:1px",p:"varsity athletic block lettering in collegiate sports typography style"},
+  {id:"nr",label:"Neon Retro",ex:"After Dark",ec:"#FF1493",fs:"font-weight:900;font-size:.85rem;letter-spacing:1px",p:"retro neon sign inspired lettering with glowing outline effect and 80s arcade energy"},
+  {id:"cs",label:"Coquette Script",ex:"Soft & Sweet",ec:"#FFB3C6",fs:"font-family:Georgia,serif;font-style:italic;font-weight:700;font-size:.9rem",p:"elegant feminine script with delicate thin strokes and coquette bow accents"},
+  {id:"dv",label:"Distressed Vintage",ex:"Born to Roam",ec:"#8B6050",fs:"font-weight:700;font-size:.85rem;letter-spacing:1px",p:"distressed vintage print typography with worn texture and aged ink effect"},
+  {id:"ss",label:"Bold Slab Serif",ex:"Make Waves",ec:"#2ECC9A",fs:"font-weight:900;font-size:.85rem;letter-spacing:.5px",p:"bold slab serif display font with strong rectangular serifs and confident modern presence"},
+];
+
+var FONT_STYLES = [
+  {id:"ch",label:"Chubby / Bubble",desc:"Bubbly, rounded, playful"},
+  {id:"r7",label:"Retro 70s Groovy",desc:"Groovy, bold, nostalgic"},
+  {id:"sc",label:"Flowing Script",desc:"Feminine, elegant, flowing"},
+  {id:"ms",label:"Minimal Sans",desc:"Clean, modern, simple"},
+  {id:"mp",label:"Mixed Playful",desc:"Mixed fonts, quirky, fun"},
+  {id:"bd",label:"Bold Display",desc:"Strong, statement-making"},
+  {id:"bl",label:"Bubble Letters",desc:"Thick, soft, outlined"},
+  {id:"vs",label:"Vintage Serif",desc:"Classic, editorial, timeless"},
+];
+
+var CASES = [
+  {id:"up",label:"ALL CAPS",ex:"SOFT LIFE ✨"},
+  {id:"ti",label:"Title Case",ex:"Soft Life ✨"},
+  {id:"lo",label:"lowercase",ex:"soft life ✨"},
+  {id:"mx",label:"mIxEd PlAyFuL",ex:"sOfT LiFe ✨"},
+];
+
+var DECOS = [
+  "🎀 Bows","💕 Hearts","⭐ Stars","✨ Sparkles","🌸 Flowers","✏️ Doodles",
+  "🎗️ Ribbons","🎈 Balloons","🎊 Confetti","🌀 Swirls","☕ Coffee Cups","💄 Lipstick",
+  "👠 High Heels","🛍️ Shopping Bags","🧁 Cupcakes","🍩 Donuts","🍦 Ice Cream",
+  "🍓 Strawberries","🕶️ Sunglasses","🌴 Palm Trees","🐱 Cats","🐻 Bears",
+  "🚀 Rockets","❄️ Snowflakes","🍃 Leaves","🌵 Cactus","💰 Money",
+  "⚡ Lightning","💎 Diamonds","🍄 Mushrooms","🦋 Butterflies","🌙 Moons","☁️ Clouds","💧 Drips"
+];
+
+var IDEAS = {
+  ai:{label:"💻 AI + Side Hustle",accent:"#8B6CBD",bg:"#EEE8F4",
+    desc:"🔥 Emerging niche — AI + digital business content is exploding. Very few sellers own this sticker category yet.",
+    list:["AI is my unpaid assistant 🤖","Built this during nap time","Side hustle loading…","Making money while reheating coffee","Digital products > 9-5","I sell things that don't exist (digitally 💅)","Passive income in progress","Working smarter not harder (thanks AI)","CEO (Chief Exhausted Operator)","ChatGPT helped me do it"]},
+  mom:{label:"👩‍👧 Mom CEO",accent:"#C17A88",bg:"#FDE8EC",
+    desc:"🌟 High-converting combo. Mom + business + humor is deeply relatable — impulse buy territory.",
+    list:["Mom by day, CEO by night","Nap time = money time","Running a business between snacks","Built my brand in pajamas","Messy bun. Million-dollar mindset.","Tired mom club ☕","Chaos but make it profitable","Soft life loading… after bedtime","My kids are my why","I work from home… barely"]},
+  funny:{label:"😂 Relatable & Funny",accent:"#C4844A",bg:"#FEF3E2",
+    desc:"😂 Humor stickers are top impulse buys. Sarcasm + relatable struggles = saves, shares, and fast sales.",
+    list:["I don't rise and shine… I log in","Currently avoiding my responsibilities","Running on caffeine & delusion","I open Canva like it's therapy","Just one more idea…","Another tab won't hurt","Overthinking my next move","Doing everything except what I should","I had a plan… then life happened","This sticker won't make you rich… or will it?"]},
+  soft:{label:"💖 Soft Life",accent:"#6A9E7A",bg:"#E4EFE4",
+    desc:"💖 Aspirational and personal. Pinterest audience saves these constantly — strong organic traffic driver.",
+    list:["Soft life, smart income","Romanticizing my online business","Healing + earning","Peace, profit, and Pinterest","Slow mornings, steady income","Gentle growth era 🌸","Pretty & profitable","Aligned & getting paid","Money flows, stress goes","Creating a life I don't need a break from"]},
+  plan:{label:"📒 Planner Labels",accent:"#C4844A",bg:"#FFF0D0",
+    desc:"📒 Repeat buyers every month. Functional + aesthetic = the most loyal sticker customers.",
+    list:["Content day 🎥","Launch mode 🚀","Batch create","Post & ghost","Money day 💰","Client work","AI task","Brainstorming","Pinterest day","Rest day (finally 😭)"]},
+};
+
+var LIBRARY = {
+  chibi:["Chibi mushroom fairy girl on a toadstool, big sparkle eyes, 2:1 head-to-body ratio, soft cell shading, blush pink and sage palette, kawaii blush marks, 2px white outline border, white background, commercial quality sticker art","Chibi axolotl mermaid blowing a bubble, bubblegum pink and aqua, big sparkle eyes, kawaii blush marks, soft cell shading, 2px white outline border, white background, sticker art","Chibi ghost reading a tiny book, soft lavender and white, big sparkle eyes, kawaii blush marks, 2:1 head ratio, 2px white outline, white background, sticker art","Chibi cinnamon roll cat in a teacup, warm beige and cream, big sparkle eyes, kawaii blush marks, white background, sticker art","Chibi capybara tea party in a flower meadow, pastel sage and dusty rose, big sparkle eyes, kawaii blush marks, 2px white border, white background, sticker art","Chibi raccoon barista holding a latte, warm brown and cream, big sparkle eyes, kawaii blush marks, white background, sticker art"],
+  crochet:["Amigurumi mushroom plush sticker, Macro Fiber Detail showing yarn loops, sage green cap and cream stem, hand-stitched border, soft plush appearance, white background, sticker art","Crocheted axolotl plushie, bubblegum pink yarn with lavender gills, Amigurumi, Macro Fiber Detail, hand-stitched seam lines, white background, sticker art","Amigurumi ghost, fluffy white and lavender yarn, Macro Fiber Detail, crocheted texture, hand-stitched border, white background, sticker art","Crocheted bunny plush, cream and blush pink yarn, Amigurumi, Macro Fiber Detail, hand-stitched ears, tiny satin bow, white background, sticker art"],
+  diecut:["Die-cut chibi cat with holographic shimmer, bold pink outline border, kiss-cut detail, white background, commercial quality sticker art","Die-cut botanical rose cluster, detailed petals, crisp 4px white border, holographic shimmer, white background, sticker art","Die-cut butterfly with iridescent wings, bold white border, chrome sheen, white background, kiss-cut detail, sticker art","Die-cut moon and stars cluster, celestial illustration, crisp white border, holographic shimmer, white background, sticker art"],
+  watercolor:["Watercolour bluebell fairy in a flower cup, soft wash, loose brushstroke edges, translucent colour layers, fine ink outlines, pastel blue and cream, white background, sticker art","Watercolour cottagecore rabbit in a meadow, soft wash, loose brushstroke edges, sage and blush palette, fine ink outlines, white background, sticker art","Watercolour honeybee on a wildflower, translucent layers, loose brushstroke edges, botanical style, golden and cream, white background, sticker art","Watercolour mushroom cluster with moss, soft wash, translucent layers, earth tones, fine ink outlines, white background, sticker art"],
+  vintage:["Vintage botanical rose illustration, botanical engraving detail, aged paper tone, muted earth palette, crosshatch linework, cream and dusty rose, 2px black outline, white background, sticker art","Vintage cottagecore bird on a branch, botanical engraving detail, aged sepia tones, Victorian illustration style, white background, sticker art","Vintage pressed flower arrangement, botanical engraving, aged paper tone, muted sage and cream, delicate line art, white background, sticker art","Vintage mushroom botanical, engraving style, aged paper tone, muted earth palette, fine crosshatch texture, white background, sticker art"],
+  png:["Later Alligator, retro italic script lettering, illustrated alligator character in bright green, scattered star accents, bold colors, no border, transparent background, DTF sublimation transfer ready, commercial quality","Groovy retro mushroom illustration, fancy retro script text overlay, vintage distressed texture, saturated colors, clean graphic design, no border, DTF sublimation print ready","Cottagecore floral frame with flowing script phrase, soft vintage wash, botanical illustration elements, clean vector graphic, no border, DTF transfer ready","Retro rainbow arch graphic with fancy brushstroke typography, bold gradient colors, vintage poster style, scattered star accents, no border, DTF transfer ready"],
+};
+
+var BUNDLE_VARS = [
+  "holding a tiny bouquet of wildflowers","wearing a flower crown","sitting on a mushroom cap","waving cheerfully","holding a small glowing lantern","surrounded by tiny butterflies","carrying a miniature watering can","wearing tiny overalls","curled up sleeping in a teacup","riding on the back of a snail","pouring tea from a tiny teapot","reading a tiny book","wrapped in a cozy knitted blanket","standing in a sunflower field","peeking from behind a giant mushroom","holding an oversized lollipop","in a tiny apron baking cookies","wearing a witches hat with a bow","sitting on a crescent moon","holding sparklers",
+];
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+
+var S = {
+  tab: "image",
+  // Image
+  iStyle: IMG_STYLES[0],
+  iSubj: "",
+  iPal: PALETTES[0],
+  iCC: ["#FDE8EC","#C17A88","#8B4A58","#F5D5E0","#FFFFFF"],
+  iCustPal: false,
+  iOutline: OUTLINES[0],
+  iBg: BGS[0],
+  iMods: {"big sparkle eyes":1,"2:1 head-to-body ratio":1,"soft cell shading":1,"kawaii blush marks":1},
+  iDecos: {},
+  iPngStyle: PNG_STYLES[0],
+  iTIdx: 0,
+  iWhyOpen: false,
+  iOut: "",
+  // Quote
+  qText: "",
+  qFont: FONT_STYLES[0],
+  qCase: CASES[0],
+  qStroke: STROKES[0],
+  qPal: PALETTES[0],
+  qCC: ["#FF85A1","#FFB3C6","#FFFFFF","#FFF4A8","#C9B1FF"],
+  qCustPal: false,
+  qBg: BGS[0],
+  qDecos: {},
+  qEmoji: true,
+  qIllus: false,
+  qOut: "",
+  // Bundle
+  bStyle: IMG_STYLES[0],
+  bTheme: "",
+  bPal: PALETTES[0],
+  bCC: ["#FDE8EC","#C17A88","#8B4A58","#F5D5E0","#FFFFFF"],
+  bCustPal: false,
+  bSize: "9",
+  bOut: [],
+  bTIdx: 5,
+  // Library / Ideas
+  libFilt: "chibi",
+  ideaNiche: "ai",
+  // Saved
+  saved: [],
+};
+
+// Load saved from localStorage
+try { S.saved = JSON.parse(localStorage.getItem("sps2") || "[]"); } catch(e) { S.saved = []; }
+
+function persist() {
+  try { localStorage.setItem("sps2", JSON.stringify(S.saved)); } catch(e){}
+}
+
+function doSave(text, meta) {
+  S.saved.unshift({text: text, meta: meta, id: Date.now()});
+  persist();
+}
+
+function doRemove(id) {
+  S.saved = S.saved.filter(function(s){ return s.id !== id; });
+  persist();
+}
+
+// ── PROMPT BUILDERS ──────────────────────────────────────────────────────────
+
+function palText(prefix) {
+  if (S[prefix + "CustPal"]) return S[prefix + "CC"].join(", ") + " color palette";
+  return S[prefix + "Pal"].d + " color palette";
+}
+
+function buildImage() {
+  var st = S.iStyle;
+  var mods = Object.keys(S.iMods).join(", ");
+  var decos = Object.keys(S.iDecos);
+  var decoStr = decos.length ? ", decorated with " + decos.map(function(d){ return d.replace(/[^\x00-\x7F]/g,"").trim(); }).join(", ") : "";
+  var pal = palText("i");
+  var subj = S.iSubj.trim() || "cute character";
+
+  if (st.isPNG) {
+    var pf = S.iPngStyle;
+    return subj + ", " + pf.p + ", " + mods + ", " + pal + decoStr + ", no border, no outline, transparent background, DTF sublimation transfer ready, commercial quality print art";
+  }
+  return subj + " in " + st.label + " illustration style, " + mods + ", " + pal + ", " + S.iOutline.p + decoStr + ", " + S.iBg.p + ", commercial quality sticker art";
+}
+
+function buildQuote() {
+  var phrase = S.qText.trim() || "your phrase here";
+  var pal = palText("q");
+  var decos = Object.keys(S.qDecos).map(function(d){ return d.replace(/[^\x00-\x7F]/g,"").trim(); }).filter(Boolean);
+  var decoStr = decos.length ? ", with " + decos.join(", ") + " decorative accents" : "";
+  var em = S.qEmoji ? ", include a small complementary emoji or decorative icon" : "";
+  var il = S.qIllus ? ", add small soft floral illustration elements around the text" : "";
+  return 'Typography quote sticker with text reading "' + phrase + '", ' + S.qFont.label + ' lettering style, ' + S.qCase.label + ' text case, ' + S.qStroke.p + ', ' + pal + ', ' + S.qBg.p + decoStr + em + il + ', commercial quality sticker art, print ready';
+}
+
+function buildBundle() {
+  var st = S.bStyle;
+  var pal = palText("b");
+  var theme = S.bTheme.trim() || "cute character";
+  var count = parseInt(S.bSize);
+  var shuffled = BUNDLE_VARS.slice().sort(function(){ return Math.random() - .5; });
+  var out = [];
+  for (var i = 0; i < count; i++) {
+    var v = shuffled[i % shuffled.length];
+    out.push(theme + " character " + v + ", " + st.label + " illustration style, " + pal + ", 2px white outline border, white background, commercial quality sticker art");
+  }
+  return out;
+}
+
+// ── COPY ─────────────────────────────────────────────────────────────────────
+
+function doCopy(text, btnId) {
+  try {
+    navigator.clipboard.writeText(text);
+  } catch(e) {
+    var ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta);
+  }
+  if (btnId) {
+    var btn = document.getElementById(btnId);
+    if (btn) {
+      var orig = btn.textContent;
+      btn.textContent = "✓ Copied!";
+      btn.classList.add("ok");
+      setTimeout(function(){ btn.textContent = orig; btn.classList.remove("ok"); }, 2000);
+    }
+  }
+}
+
+// ── PAL PICKER ───────────────────────────────────────────────────────────────
+
+function palHTML(pre) {
+  var cur = S[pre + "Pal"];
+  var uc = S[pre + "CustPal"];
+  var cc = S[pre + "CC"];
+
+  var presets = PALETTES.map(function(p) {
+    var dots = p.c.map(function(c){ return '<div class="pdot" style="background:' + c + '"></div>'; }).join("");
+    return '<div class="pc ' + (!uc && cur.id === p.id ? "on" : "") + '" onclick="selPal(\'' + pre + '\',\'' + p.id + '\')">' +
+           '<div class="pdots">' + dots + '</div>' +
+           '<span class="pnm">' + p.label + '</span></div>';
+  }).join("");
+
+  var wells = cc.map(function(c, i) {
+    return '<input type="color" value="' + c + '" onchange="updCC(\'' + pre + '\',' + i + ',this.value)" title="Color ' + (i+1) + '">';
+  }).join("");
+
+  return '<div class="st">Colour Palette</div>' +
+    '<div class="pal-row mb">' + presets + '</div>' +
+    '<div class="cpal ' + (uc ? "active" : "") + '">' +
+    '<span class="cpal-lbl">🎨 Custom:</span>' +
+    '<div style="display:flex;gap:.28rem">' + wells + '</div>' +
+    '<span class="cpal-note">Click swatches to pick your own</span></div>';
+}
+
+// ── RENDER TABS ───────────────────────────────────────────────────────────────
+
+function rImage() {
+  var st = S.iStyle;
+  var isPNG = !!st.isPNG;
+
+  var styleCds = IMG_STYLES.map(function(s) {
+    return '<div class="sc ' + (S.iStyle.id === s.id ? "on" : "") + '" style="background:' + s.bg + ';border-color:' + (S.iStyle.id === s.id ? s.bdr : "transparent") + '" onclick="selIStyle(\'' + s.id + '\')">' +
+           '<span class="sc-em">' + s.em + '</span>' +
+           '<div class="sc-nm">' + s.label + '</div>' +
+           '<div class="sc-ds">' + s.desc + '</div></div>';
+  }).join("");
+
+  var modChips = st.mods.map(function(m) {
+    var on = S.iMods[m] ? "on" : "";
+    return '<div class="chip ' + on + '" onclick="togIMod(\'' + m.replace(/'/g,"\\'") + '\')">' + m + '</div>';
+  }).join("");
+
+  var decoChips = DECOS.map(function(d, i) {
+    var on = S.iDecos[d] ? "on" : "";
+    return '<div class="chip ' + on + '" onclick="togIDeco(' + i + ')">' + d + '</div>';
+  }).join("");
+
+  var outlineHTML = isPNG ? "" : (function() {
+    var og = OUTLINES.map(function(o) {
+      return '<div class="oc2 ' + (S.iOutline.id === o.id ? "on" : "") + '" onclick="selOutline(\'' + o.id + '\')">' +
+             '<div class="os" style="background:' + o.color + ';border-color:' + o.border + '"></div>' +
+             '<div class="ol">' + o.label + '</div></div>';
+    }).join("");
+    var bg = BGS.map(function(b) {
+      return '<div class="bgc ' + (S.iBg.id === b.id ? "on" : "") + '" onclick="selIBg(\'' + b.id + '\')">' +
+             '<div class="bgs" style="background:' + b.color + '"></div>' + b.label + '</div>';
+    }).join("");
+    return '<div class="st">Outline / Border <span style="font-size:.58rem;font-weight:400;color:#9A7080">— for print on demand</span></div>' +
+           '<div class="og">' + og + '</div>' +
+           '<div class="st">Background</div>' +
+           '<div class="bg-row mb">' + bg + '</div>';
+  })();
+
+  var pngHTML = !isPNG ? "" : (function() {
+    var cards = PNG_STYLES.map(function(f) {
+      var isOn = S.iPngStyle.id === f.id;
+      return '<div class="pfc ' + (isOn ? "on" : "") + '" onclick="selPngStyle(\'' + f.id + '\')">' +
+             '<div class="pfn">' + f.label + '</div>' +
+             '<div style="' + f.fs + ';color:' + f.ec + '">' + f.ex + '</div></div>';
+    }).join("");
+    return '<div class="st">Font / Lettering Style <span style="font-size:.58rem;font-weight:400;color:#9A7080">— click to select</span></div>' +
+           '<div class="png-grid">' + cards + '</div>' +
+           '<div style="font-size:.62rem;color:#4A7890;line-height:1.5;margin-bottom:.8rem;background:#E8F4F8;border:1px solid #A8C8D8;border-radius:8px;padding:.52rem .68rem">💡 These designs have <strong>no thick border</strong> — illustration sits cleanly on fabric. Perfect for DTF transfers, Printify and Printful.</div>';
+  })();
+
+  var outEl = S.iOut ? (
+    '<div class="outc">' +
+    '<div class="out-meta">' + st.em + ' ' + st.label + (!isPNG ? ' · ' + S.iOutline.label + ' · ' + S.iBg.label : '') + '</div>' +
+    '<div class="out-text">' + escH(S.iOut) + '</div>' +
+    '<div class="out-acts">' +
+    '<button class="bsm brose" id="cp-img" onclick="doCopy(S.iOut,\'cp-img\')">📋 Copy Prompt</button>' +
+    '<button class="bsm bghost" onclick="doSave(S.iOut,{type:\'Image\',style:\'' + st.label + '\'});render()">🌸 Save</button>' +
+    '<button class="bsm bghost" onclick="genImage()">🔄 Redo</button>' +
+    '</div></div>'
+  ) : "";
+
+  return '<div class="st">Choose Style</div>' +
+    '<div class="hscroll mb">' + styleCds + '</div>' +
+    '<div class="why ' + (S.iWhyOpen ? "open" : "") + '" onclick="togWhy()">' +
+    '<div class="why-h"><span class="why-lbl">🔑 Why these modifiers work for ' + st.label + '</span><span class="why-chev">▼</span></div>' +
+    '<div class="why-body">' + st.why + '</div></div>' +
+    '<label class="lbl">Your Subject / Character</label>' +
+    '<div class="irow mb"><input class="txt" id="iSubjIn" value="' + escH(S.iSubj) + '" oninput="S.iSubj=this.value" placeholder="e.g. ' + TRENDING[S.iTIdx] + '"><button class="surp" onclick="iSurp()">🎲 Surprise</button></div>' +
+    palHTML("i") +
+    pngHTML + outlineHTML +
+    '<label class="lbl">Style Modifiers</label>' +
+    '<div class="chips mb">' + modChips + '</div>' +
+    '<div class="st">Decorative Elements <span style="font-size:.58rem;font-weight:400;color:#9A7080">— select multiple</span></div>' +
+    '<div class="chips">' + decoChips + '</div>' +
+    (Object.keys(S.iDecos).length ? '<div style="font-size:.6rem;color:#9A7080;margin-top:-.4rem;margin-bottom:.8rem">' + Object.keys(S.iDecos).length + ' selected</div>' : '') +
+    '<button class="btn" onclick="genImage()">✨ Generate ' + st.short + ' Sticker Prompt</button>' +
+    outEl;
+}
+
+function rQuote() {
+  var fGrid = FONT_STYLES.map(function(f) {
+    return '<div class="oc ' + (S.qFont.id === f.id ? "on" : "") + '" onclick="selQFont(\'' + f.id + '\')">' +
+           '<div class="oc-l">' + f.label + '</div><div class="oc-s">' + f.desc + '</div></div>';
+  }).join("");
+
+  var cGrid = CASES.map(function(c) {
+    return '<div class="oc ' + (S.qCase.id === c.id ? "on" : "") + '" onclick="selQCase(\'' + c.id + '\')">' +
+           '<div class="oc-l">' + c.label + '</div><div class="oc-s">' + c.ex + '</div></div>';
+  }).join("");
+
+  var sRow = STROKES.map(function(s) {
+    return '<div class="strk ' + (S.qStroke.id === s.id ? "on" : "") + '" onclick="selQStrk(\'' + s.id + '\')">' +
+           '<div class="sdot" style="background:' + s.dot + ';border:2px solid ' + (s.ring || "#ccc") + '"></div>' + s.label + '</div>';
+  }).join("");
+
+  var bgRow = BGS.map(function(b) {
+    return '<div class="bgc ' + (S.qBg.id === b.id ? "on" : "") + '" onclick="selQBg(\'' + b.id + '\')">' +
+           '<div class="bgs" style="background:' + b.color + '"></div>' + b.label + '</div>';
+  }).join("");
+
+  var dChips = DECOS.map(function(d, i) {
+    return '<div class="chip ' + (S.qDecos[d] ? "on" : "") + '" onclick="togQDeco(' + i + ')">' + d + '</div>';
+  }).join("");
+
+  // live preview style
+  var tfm = S.qCase.id === "up" ? "uppercase" : S.qCase.id === "lo" ? "lowercase" : "none";
+  var sk = S.qStroke.id === "sw" ? "1.5px white" : S.qStroke.id === "sb" ? "1.5px #111" : S.qStroke.id === "sd" ? "1.5px #C17A88" : "0";
+  var pc = S.qCustPal ? S.qCC[0] : (S.qPal.c[0] || "#FF6BAE");
+  var pb = S.qCustPal ? S.qCC[2] : (S.qPal.c[4] || "#fff");
+  var glow = S.qStroke.id === "sg" ? "0 0 10px " + pc + "99" : "none";
+  var ff = ["sc","vs"].indexOf(S.qFont.id) > -1 ? "Georgia,serif" : "system-ui,sans-serif";
+  var fw = ["ch","bd","bl"].indexOf(S.qFont.id) > -1 ? "900" : "700";
+
+  var prevHTML = S.qText ? (
+    '<div class="prev-wrap"><div class="prev-lbl">Live Style Preview</div>' +
+    '<div id="prev-txt" style="font-family:' + ff + ';font-weight:' + fw + ';text-transform:' + tfm + ';-webkit-text-stroke:' + sk + ';color:' + pc + ';text-shadow:' + glow + ';background:' + pb + ';padding:.33rem .58rem;border-radius:7px;display:inline-block;word-break:break-word;max-width:100%">' +
+    escH(S.qText) + '</div></div>'
+  ) : "";
+
+  var outEl = S.qOut ? (
+    '<div class="outc">' +
+    '<div class="out-meta">💬 ' + S.qFont.label + ' · ' + S.qCase.label + ' · ' + S.qStroke.label + '</div>' +
+    '<div class="out-text">' + escH(S.qOut) + '</div>' +
+    '<div class="out-acts">' +
+    '<button class="bsm brose" id="cp-qt" onclick="doCopy(S.qOut,\'cp-qt\')">📋 Copy Prompt</button>' +
+    '<button class="bsm bghost" onclick="doSave(S.qOut,{type:\'Quote\',style:\'Quote Sticker\'});render()">🌸 Save</button>' +
+    '<button class="bsm bghost" onclick="genQuote()">🔄 Redo</button>' +
+    '</div></div>'
+  ) : "";
+
+  return '<div class="info">💬 <strong>Quote stickers</strong> are top impulse buys. Niche phrases — side hustle humor, soft life affirmations — consistently outsell generic cute designs.</div>' +
+    '<label class="lbl">Your Quote or Phrase</label>' +
+    '<textarea class="txt mb" rows="2" id="qTextIn" oninput="S.qText=this.value;updPrev()" placeholder="e.g. Running on caffeine &amp; delusion">' + escH(S.qText) + '</textarea>' +
+    prevHTML +
+    '<div class="st">Font Style</div><div class="opt2">' + fGrid + '</div>' +
+    '<div class="st">Text Case</div><div class="opt2">' + cGrid + '</div>' +
+    '<div class="st">Stroke &amp; Outline</div><div class="strk-row">' + sRow + '</div>' +
+    palHTML("q") +
+    '<div class="st" style="margin-top:.8rem">Background</div><div class="bg-row">' + bgRow + '</div>' +
+    '<div class="st">Decorative Elements <span style="font-size:.58rem;font-weight:400;color:#9A7080">— select multiple</span></div>' +
+    '<div class="chips mb">' + dChips + '</div>' +
+    '<div class="trow"><span class="tl">Add Emoji / Icon</span><label class="tgl"><input type="checkbox" ' + (S.qEmoji ? "checked" : "") + ' onchange="S.qEmoji=this.checked"><span class="ttrack"></span></label><span class="tn">Small decorative emoji</span></div>' +
+    '<div class="trow"><span class="tl">Add Soft Illustration</span><label class="tgl"><input type="checkbox" ' + (S.qIllus ? "checked" : "") + ' onchange="S.qIllus=this.checked"><span class="ttrack"></span></label><span class="tn">Florals or decorative elements around text</span></div>' +
+    '<button class="btn" onclick="genQuote()">💬 Generate Quote Sticker Prompt</button>' +
+    outEl;
+}
+
+function rBundle() {
+  var stCds = IMG_STYLES.map(function(s) {
+    return '<div class="sc ' + (S.bStyle.id === s.id ? "on" : "") + '" style="background:' + s.bg + ';border-color:' + (S.bStyle.id === s.id ? s.bdr : "transparent") + '" onclick="selBStyle(\'' + s.id + '\')">' +
+           '<span class="sc-em">' + s.em + '</span><div class="sc-nm">' + s.label + '</div><div class="sc-ds">' + s.desc + '</div></div>';
+  }).join("");
+
+  var pieces = S.bOut.map(function(p, i) {
+    var esc = p.replace(/'/g,"\\'");
+    return '<div class="bpiece"><div class="bnum">Piece ' + (i+1) + ' of ' + S.bOut.length + '</div>' +
+           '<div class="btext">' + escH(p) + '</div>' +
+           '<div class="bacts">' +
+           '<button class="bsm brose" id="cp-b' + i + '" onclick="doCopy(\'' + esc + '\',\'cp-b' + i + '\')">Copy</button>' +
+           '<button class="bsm bghost" onclick="doSave(\'' + esc + '\',{type:\'Bundle\',style:\'' + S.bStyle.label + '\'});render()">Save</button>' +
+           '</div></div>';
+  }).join("");
+
+  var allTxt = S.bOut.map(function(p, i){ return (i+1) + ". " + p; }).join("\n\n").replace(/'/g,"\\'");
+
+  return '<div class="info">📦 <strong>Bundle Mode</strong> generates a full matching set — each piece is a different variation of your theme, all sharing the same colour palette and style.</div>' +
+    '<div class="st">Style</div><div class="hscroll mb">' + stCds + '</div>' +
+    '<label class="lbl">Bundle Theme</label>' +
+    '<div class="irow mb"><input class="txt" id="bThemeIn" value="' + escH(S.bTheme) + '" oninput="S.bTheme=this.value" placeholder="e.g. Cottagecore Bees, Halloween Ghosts, Garden Snails"><button class="surp" onclick="bSurp()">🎲</button></div>' +
+    palHTML("b") +
+    '<label class="lbl" style="margin-top:.8rem">Bundle Size</label>' +
+    '<select class="sel" onchange="S.bSize=this.value">' +
+    ['6','9','12','16'].map(function(v){ return '<option value="' + v + '" ' + (S.bSize === v ? "selected" : "") + '>' + v + '-piece ' + (v==="6"?"mini":v==="9"?"standard":v==="12"?"full":"mega") + ' sheet</option>'; }).join("") +
+    '</select>' +
+    '<button class="btn" onclick="genBundle()">📦 Generate ' + S.bSize + '-Piece Bundle</button>' +
+    (S.bOut.length ? (
+      '<div class="outc">' +
+      '<div class="out-meta">' + escH(S.bTheme) + ' · ' + S.bOut.length + ' pieces</div>' +
+      '<div class="out-acts" style="margin-bottom:.72rem">' +
+      '<button class="bsm brose" id="cp-ball" onclick="doCopy(\'' + allTxt + '\',\'cp-ball\')">📋 Copy All</button>' +
+      '<button class="bsm bghost" onclick="doSave(\'' + allTxt + '\',{type:\'Bundle\',style:\'' + S.bStyle.label + '\'});render()">🌸 Save</button>' +
+      '</div>' + pieces + '</div>'
+    ) : "");
+}
+
+function rIdeas() {
+  var cur = IDEAS[S.ideaNiche];
+  var tabs = Object.keys(IDEAS).map(function(k) {
+    return '<button class="ntab ' + (S.ideaNiche === k ? "on" : "") + '" onclick="S.ideaNiche=\'' + k + '\';render()">' + IDEAS[k].label + '</button>';
+  }).join("");
+
+  var items = cur.list.map(function(idea, i) {
+    var esc = idea.replace(/'/g,"\\'");
+    return '<div class="idea-item">' +
+           '<span class="idea-txt">"' + escH(idea) + '"</span>' +
+           '<div class="idea-acts">' +
+           '<button class="iuse" id="cp-idea-' + i + '" onclick="doCopy(\'' + esc + '\',\'cp-idea-' + i + '\')">Copy</button>' +
+           '<button class="iuse go" onclick="toQuote(\'' + esc + '\')">Use in Quote →</button>' +
+           '</div></div>';
+  }).join("");
+
+  return '<div class="info">💡 <strong>Research-backed:</strong> Niche identity stickers consistently outsell generic cute designs. Hit <strong>Use in Quote →</strong> to send any phrase to the Quote tab.</div>' +
+    '<div class="ntabs">' + tabs + '</div>' +
+    '<div style="background:' + cur.bg + ';border:1px solid ' + cur.accent + '44;border-radius:8px;padding:.5rem .65rem;margin-bottom:.72rem;font-size:.65rem;color:#5A2535;line-height:1.48">' + cur.desc + '</div>' +
+    items;
+}
+
+function rLibrary() {
+  var filts = [
+    {id:"chibi",label:"✨ Chibi"},{id:"crochet",label:"🧶 Crochet"},
+    {id:"diecut",label:"✂️ Die-Cut"},{id:"watercolor",label:"🎨 Watercolour"},
+    {id:"vintage",label:"🌿 Vintage"},{id:"png",label:"👕 PNG / DTF"}
+  ];
+  var fBtns = filts.map(function(f) {
+    return '<button class="fbtn ' + (S.libFilt === f.id ? "on" : "") + '" onclick="S.libFilt=\'' + f.id + '\';render()">' + f.label + '</button>';
+  }).join("");
+
+  var total = Object.keys(LIBRARY).reduce(function(a,k){ return a + LIBRARY[k].length; }, 0);
+  var items = (LIBRARY[S.libFilt] || []).map(function(p, i) {
+    var esc = p.replace(/'/g,"\\'");
+    return '<div class="lcard">' +
+           '<span class="lnum">' + (i+1) + '.</span>' +
+           '<span class="ltext">' + escH(p) + '</span>' +
+           '<div style="display:flex;flex-direction:column;gap:.18rem;flex-shrink:0">' +
+           '<button class="lbtn" id="cp-lb-' + i + '" onclick="doCopy(\'' + esc + '\',\'cp-lb-' + i + '\')">Copy</button>' +
+           '<button class="lbtn" style="border-color:#E8C870;color:#8B6A20" onclick="doSave(\'' + esc + '\',{type:\'Library\',style:\'' + S.libFilt + '\'});render()">Save</button>' +
+           '</div></div>';
+  }).join("");
+
+  return '<div style="font-size:.67rem;color:var(--muted);margin-bottom:.75rem;line-height:1.48">' + total + ' ready-to-use prompts. Copy any directly into your AI image generator.</div>' +
+    '<div class="filt-row">' + fBtns + '</div>' + items;
+}
+
+function rSaved() {
+  if (!S.saved.length) {
+    return '<div class="sv-empty"><div style="font-size:1.8rem;margin-bottom:.42rem">🌸</div><div>No saved prompts yet.</div><div style="margin-top:.25rem;font-size:.62rem">Hit Save on any generated prompt or library item.<br>Your saves are stored automatically.</div></div>';
+  }
+  var allTxt = S.saved.map(function(s,i){ return (i+1) + ". " + s.text; }).join("\n\n").replace(/'/g,"\\'");
+  var items = S.saved.map(function(s) {
+    var esc = s.text.replace(/'/g,"\\'");
+    var preview = s.text.length > 170 ? s.text.slice(0,170) + "…" : s.text;
+    return '<div class="svcard">' +
+           '<div class="sv-meta">' + escH(s.meta.style || "") + ' · ' + escH(s.meta.type || "") + '</div>' +
+           '<div class="sv-text">' + escH(preview) + '</div>' +
+           '<div style="display:flex;gap:.3rem;flex-wrap:wrap">' +
+           '<button class="bsm brose" id="cp-sv-' + s.id + '" onclick="doCopy(\'' + esc + '\',\'cp-sv-' + s.id + '\')">Copy</button>' +
+           '<button class="bsm bghost" style="color:#B05050" onclick="doRemove(' + s.id + ');render()">Remove</button>' +
+           '</div></div>';
+  }).join("");
+
+  return '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem">' +
+    '<span style="font-size:.73rem;font-weight:700;color:var(--deep)">' + S.saved.length + ' saved prompt' + (S.saved.length !== 1 ? 's' : '') + ' · auto-saved ✓</span>' +
+    '<button class="bsm brose" id="cp-sall" onclick="doCopy(\'' + allTxt + '\',\'cp-sall\')">📋 Copy All</button>' +
+    '</div>' + items;
+}
+
+function rTips() {
+  var prices = [
+    ["Quote Sticker Sheet","$3 – $5","9-12 phrases, one niche"],
+    ["Image Sticker Sheet","$3 – $5","9-12 pieces, one style"],
+    ["Niche Bundle Pack","$8 – $14","3 coordinating sheets"],
+    ["Holographic Die-Cut","$4 – $7","Premium product type"],
+    ["Mega Bundle","$16 – $28","5+ sheets, multiple themes"],
+    ["+ Commercial License","+ $6 – $15","PLR upsell add-on"]
+  ];
+  var pCards = prices.map(function(p) {
+    return '<div class="pcard"><div class="pname">' + p[0] + '</div><div class="pval">' + p[1] + '</div><div class="pnote">' + p[2] + '</div></div>';
+  }).join("");
+
+  var tips = [
+    ["🎯 The #1 beginner mistake","Making 'pretty stickers' with no niche. Generic cute designs are saturated. Target a specific person — someone who runs a side hustle, loves soft life, or is a tired-but-building creator — and your sticker stands out instantly."],
+    ["💬 Why quote stickers convert fastest","They're impulse buys. Someone sees 'Running on caffeine & delusion' and thinks 'that's literally me' — bought in under 10 seconds. Identity + humor = the fastest conversion in stickers."],
+    ["📦 Sell singles AND bundles","Real buyer data: 'I wouldn't buy just one… give me a 5-pack.' Offer both. Single sticker ($2–3) as gateway. Niche bundle (5–10 stickers, $7–12) is where your margin lives."],
+    ["👕 PNG / DTF = New Revenue Stream","DTF transfers for t-shirts and tote bags are exploding on Etsy. Your sticker designs convert directly to DTF with minimal changes — just use the PNG Sublimation style and your prompts are formatted correctly."],
+    ["🔑 Etsy Title Formula","Style + Subject + Product + Printable + Instant Download. Example: 'Funny Side Hustle Quote Sticker Sheet Printable, Digital Entrepreneur Sticker Bundle PNG, Instant Download'"],
+    ["📌 Drive Traffic with PinCraft AI","After creating your products, use PinCraft AI to generate Pinterest pin descriptions and keywords. Pinterest is the highest-converting free traffic source for Etsy digital products."],
+    ["🌟 Trending Now (2026)","Coquette bows, Y2K retro, Cottagecore nature, Mosscore, Dark academia, Minimal neutral, Regencycore. Layer trending aesthetics with niche identity phrases for maximum Etsy search visibility."],
+  ];
+  var tipCards = tips.map(function(t) {
+    return '<div class="tipcard"><div class="tip-t">' + t[0] + '</div><div class="tip-b">' + t[1] + '</div></div>';
+  }).join("");
+
+  return '<div class="pgrid">' + pCards + '</div><div class="div"></div>' + tipCards;
+}
+
+// ── MAIN RENDER ───────────────────────────────────────────────────────────────
+
+var TABS = [
+  {id:"image",label:"✨ Image Stickers"},
+  {id:"quote",label:"💬 Quote Stickers"},
+  {id:"bundle",label:"📦 Bundle Mode"},
+  {id:"ideas",label:"💡 Idea Bank (50)"},
+  {id:"library",label:"📚 Library"},
+  {id:"saved",label:"🌸 Saved"},
+  {id:"tips",label:"💰 Sell & Price"},
+];
+
+function render() {
+  var sv = S.saved.length;
+  var navHTML = TABS.map(function(t) {
+    var lbl = (t.id === "saved" && sv) ? "🌸 Saved (" + sv + ")" : t.label;
+    return '<button class="nb ' + (S.tab === t.id ? "on" : "") + '" onclick="sw(\'' + t.id + '\')">' + lbl + '</button>';
+  }).join("");
+
+  var panelHTML = "";
+  if (S.tab === "image")   panelHTML = rImage();
+  else if (S.tab === "quote")   panelHTML = rQuote();
+  else if (S.tab === "bundle")  panelHTML = rBundle();
+  else if (S.tab === "ideas")   panelHTML = rIdeas();
+  else if (S.tab === "library") panelHTML = rLibrary();
+  else if (S.tab === "saved")   panelHTML = rSaved();
+  else if (S.tab === "tips")    panelHTML = rTips();
+
+  document.getElementById("app").innerHTML =
+    '<div class="how"><div class="how-inner">' +
+    '<div class="how-title">📋 How to Use This Generator</div>' +
+    '<div class="how-steps">' +
+    '<div class="how-step"><div class="how-n">1</div><div class="how-t">Choose Style</div><div class="how-s">Pick Chibi, Quote, PNG, Crochet, Die-Cut or Vintage</div></div>' +
+    '<div class="how-step"><div class="how-n">2</div><div class="how-t">Select Options</div><div class="how-s">Set palette, outline, background &amp; decorative elements</div></div>' +
+    '<div class="how-step"><div class="how-n">3</div><div class="how-t">Build Prompt</div><div class="how-s">Hit Generate — your prompt assembles instantly</div></div>' +
+    '<div class="how-step"><div class="how-n">4</div><div class="how-t">Copy &amp; Use</div><div class="how-s">Paste into Midjourney, Canva AI, Firefly, or ChatGPT</div></div>' +
+    '</div></div></div>' +
+
+    '<div class="hdr">' +
+    '<div class="hdr-eye">Digital Product Creator Tool</div>' +
+    '<div class="hdr-title">Sticker Prompt <em>Studio</em></div>' +
+    '<div class="hdr-sub">Image stickers · Quote stickers · PNG sublimation · Bundle mode · 50 trending ideas</div>' +
+    '<div class="hdr-chips">' +
+    ['Chibi','Crochet','Die-Cut','PNG/DTF','Quote Stickers','Custom Colors','Bundle Mode','Auto-Save'].map(function(c){ return '<span class="hchip">' + c + '</span>'; }).join("") +
+    '</div></div>' +
+
+    '<div class="nav"><div class="nav-inner">' + navHTML + '</div></div>' +
+    '<div class="panel">' + panelHTML + '</div>' +
+
+    '<div class="footer">' +
+    '<div class="ftr-logo">Sticker Prompt <em>Studio</em></div>' +
+    '<div class="ftr-sub">Unlimited prompts · Saves stored in your browser automatically</div>' +
+    '<div class="ftr-links">' +
+    '<a class="flnk hi" href="https://pincraftai.gumroad.com/l/pincraftai" target="_blank">📌 PinCraft AI</a>' +
+    '<a class="flnk" href="https://www.instantrights.com/" target="_blank">🌐 InstantRights.com</a>' +
+    '<a class="flnk" href="https://pincraftai.gumroad.com/l/pincraftai" target="_blank">🛒 Gumroad</a>' +
+    '<a class="flnk" href="https://www.youtube.com/channel/UCusY57wfUQSpbnLSg7FKt1Q" target="_blank">▶️ YouTube</a>' +
+    '<a class="flnk" href="https://www.tiktok.com/@zenarastar" target="_blank">🎵 TikTok</a>' +
+    '</div>' +
+    '<div class="ftr-copy">© 2026 Sticker Prompt Studio · Zenarastar · Built for Etsy digital product sellers</div>' +
+    '</div>';
+
+  // Restore input values after render
+  var si = document.getElementById("iSubjIn"); if (si) si.value = S.iSubj;
+  var qt = document.getElementById("qTextIn"); if (qt) qt.value = S.qText;
+  var bt = document.getElementById("bThemeIn"); if (bt) bt.value = S.bTheme;
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+
+function escH(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function sw(id) { S.tab = id; render(); }
+
+function selIStyle(id) {
+  var st = IMG_STYLES.filter(function(s){ return s.id === id; })[0];
+  S.iStyle = st;
+  S.iMods = {};
+  st.mods.slice(0,4).forEach(function(m){ S.iMods[m] = 1; });
+  S.iOut = ""; S.iWhyOpen = false;
+  render();
+}
+
+function togWhy() { S.iWhyOpen = !S.iWhyOpen; render(); }
+
+function selPal(pre, id) {
+  S[pre + "Pal"] = PALETTES.filter(function(p){ return p.id === id; })[0];
+  S[pre + "CustPal"] = false;
+  render();
+}
+
+function updCC(pre, idx, val) {
+  S[pre + "CC"][idx] = val;
+  S[pre + "CustPal"] = true;
+  // Update swatch border to show active without full re-render
+  var cpal = document.querySelector(".cpal");
+  if (cpal) cpal.classList.add("active");
+}
+
+function selOutline(id) { S.iOutline = OUTLINES.filter(function(o){ return o.id === id; })[0]; render(); }
+function selIBg(id)     { S.iBg = BGS.filter(function(b){ return b.id === id; })[0]; render(); }
+function selQBg(id)     { S.qBg = BGS.filter(function(b){ return b.id === id; })[0]; render(); }
+
+function togIMod(m) { if (S.iMods[m]) { delete S.iMods[m]; } else { S.iMods[m] = 1; } render(); }
+function togIDeco(i) { var d = DECOS[i]; if (S.iDecos[d]) { delete S.iDecos[d]; } else { S.iDecos[d] = 1; } render(); }
+function togQDeco(i) { var d = DECOS[i]; if (S.qDecos[d]) { delete S.qDecos[d]; } else { S.qDecos[d] = 1; } render(); }
+
+function selQFont(id) { S.qFont = FONT_STYLES.filter(function(f){ return f.id === id; })[0]; render(); }
+function selQCase(id) { S.qCase = CASES.filter(function(c){ return c.id === id; })[0]; render(); }
+function selQStrk(id) { S.qStroke = STROKES.filter(function(s){ return s.id === id; })[0]; render(); }
+function selBStyle(id) { S.bStyle = IMG_STYLES.filter(function(s){ return s.id === id; })[0]; S.bOut = []; render(); }
+function selPngStyle(id) { S.iPngStyle = PNG_STYLES.filter(function(f){ return f.id === id; })[0]; render(); }
+
+function iSurp() { S.iTIdx = (S.iTIdx + 1) % TRENDING.length; S.iSubj = TRENDING[S.iTIdx]; render(); }
+function bSurp() { S.bTIdx = (S.bTIdx + 1) % TRENDING.length; S.bTheme = TRENDING[S.bTIdx]; render(); }
+
+function genImage() {
+  var el = document.getElementById("iSubjIn");
+  if (el) S.iSubj = el.value;
+  S.iOut = buildImage();
+  render();
+}
+
+function genQuote() {
+  var el = document.getElementById("qTextIn");
+  if (el) S.qText = el.value;
+  S.qOut = buildQuote();
+  render();
+}
+
+function genBundle() {
+  var el = document.getElementById("bThemeIn");
+  if (el) S.bTheme = el.value;
+  S.bOut = buildBundle();
+  render();
+}
+
+function updPrev() {
+  S.qText = (document.getElementById("qTextIn") || {}).value || S.qText;
+  var pt = document.getElementById("prev-txt");
+  if (pt) { pt.textContent = S.qText; return; }
+  if (S.qText.trim()) render();
+}
+
+function toQuote(text) { S.qText = text; S.tab = "quote"; render(); }
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+render();
+
+</script>
+</body>
+</html>
