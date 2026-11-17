@@ -485,22 +485,44 @@ function buildBundle() {
 // ── COPY ─────────────────────────────────────────────────────────────────────
 
 function doCopy(text, btnId) {
-  try {
-    navigator.clipboard.writeText(text);
-  } catch(e) {
+  function fallbackCopy() {
     var ta = document.createElement("textarea");
-    ta.value = text; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); document.body.removeChild(ta);
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    var copied = false;
+    try { copied = document.execCommand("copy"); } catch(e) {}
+    document.body.removeChild(ta);
+    return copied;
   }
-  if (btnId) {
+
+  function showCopyStatus(copied) {
+    if (!btnId) return;
     var btn = document.getElementById(btnId);
-    if (btn) {
-      var orig = btn.textContent;
-      btn.textContent = "✓ Copied!";
-      btn.classList.add("ok");
-      setTimeout(function(){ btn.textContent = orig; btn.classList.remove("ok"); }, 2000);
-    }
+    if (!btn) return;
+    var orig = btn.textContent;
+    btn.textContent = copied ? "✓ Copied!" : "Copy failed — select text";
+    if (copied) btn.classList.add("ok");
+    setTimeout(function(){ btn.textContent = orig; btn.classList.remove("ok"); }, 2200);
   }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function(){
+      showCopyStatus(true);
+    }).catch(function(){
+      showCopyStatus(fallbackCopy());
+    });
+  } else {
+    showCopyStatus(fallbackCopy());
+  }
+}
+
+function copyBundleAll() {
+  var allText = S.bOut.map(function(p, i){ return (i + 1) + ". " + p; }).join("\\n\\n");
+  doCopy(allText, "cp-ball");
 }
 
 // ── PAL PICKER ───────────────────────────────────────────────────────────────
@@ -709,7 +731,7 @@ function rBundle() {
       '<div class="outc">' +
       '<div class="out-meta">' + escH(S.bTheme) + ' · ' + S.bOut.length + ' pieces</div>' +
       '<div class="out-acts" style="margin-bottom:.72rem">' +
-      '<button class="bsm brose" id="cp-ball" onclick="doCopy(\'' + allTxt + '\',\'cp-ball\')">📋 Copy All</button>' +
+      '<button class="bsm brose" id="cp-ball" onclick="copyBundleAll()">📋 Copy All</button>' +
       '<button class="bsm bghost" onclick="doSave(\'' + allTxt + '\',{type:\'Bundle\',style:\'' + S.bStyle.label + '\'});render()">🌸 Save</button>' +
       '</div>' + pieces + '</div>'
     ) : "");
