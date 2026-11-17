@@ -521,7 +521,7 @@ function doCopy(text, btnId) {
 }
 
 function copyBundleAll() {
-  var allText = S.bOut.map(function(p, i){ return (i + 1) + ". " + p; }).join("\\n\\n");
+  var allText = S.bOut.map(function(p, i){ return (i + 1) + ". " + p; }).join("\n\n");
   doCopy(allText, "cp-ball");
 }
 
